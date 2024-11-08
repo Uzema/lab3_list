@@ -68,8 +68,8 @@ public:
 	void print();
 	T& operator[](int index);
 	size_t size();
-	
-	//void clear();
+	void shift(int k);
+	//void shift_single();
 
 	Node* insert(T value, Node* prev) {
 		Node* temp = new Node;
@@ -237,23 +237,6 @@ inline T& List<T>::operator[](int index) {
 	throw "no element found";
 }
 
-//template <class T>
-//typename List<T>::Node* List<T>::find(T value) {
-//	Node* current = first;
-//	while (current) {
-//		if (current->data == value) {
-//			return current;
-//		}
-//		current = current->next;
-//	}
-//	return nullptr;
-//}
-//
-//template <class T>
-//typename List<T>::Node* List<T>::get_first() {
-//	return first;
-//}
-
 template <class T>
 size_t List<T>::size() {
 	Node* current = first;
@@ -264,66 +247,54 @@ size_t List<T>::size() {
 	}
 	return size;
 }
+//-------------------------------------------------------------------------------|
+//TASK 6																		 |
+//Perform a cyclic shift of a list by k elements to the right in a single pass.	 |
+//-------------------------------------------------------------------------------|
 
-//template <class T>
-//typename List<T>::Node* List<T>::insert(T value, List<T>::Node* prev) {
-//	Node* temp = new Node;
-//	temp->next = prev->next;
-//	temp->data = value;
-//	prev->next = temp;
-//	return temp;
-//}
-//
-//template <class T>
-//typename List<T>::Node* List<T>::insert_front(T value) {
-//	Node* temp = new Node;
-//	temp->next = first;
-//	first = temp;
-//	temp->data = value;
-//	return first;
-//}
-//
-//template <class T>
-//typename List<T>::Node* List<T>::erase(List<T>::Node* prev) {
-//	Node* tmp = prev->next;
-//	if (!prev->next || !prev) {
-//		throw 1;
-//	}
-//	prev->next = tmp->next;
-//	delete tmp;
-//	return prev->next;
-//
-//}
-//
-//template <class T>
-//typename List<T>::Node* List<T>::erase_front() {
-//	if (!first) {
-//		throw "cant erase element that doesnt exist";
-//	}
-//	Node* tmp = first;
-//	first = tmp->next;
-//	delete tmp;
-//	return first;
-//}
+template <class T>
+void List<T>::shift(int k) {
+	if ((first == nullptr) || (k == 0)) {
+		return;
+	}
 
+	if (k < 0) {
+		throw "k cant be negative";
+	}
+
+	Node* fast = first;
+	Node* slow = first;
+	for (int i = 0; (i < k) && (fast != nullptr); i++) {
+		fast = fast->next;
+	}
+
+	if (fast == nullptr) {
+		throw "k cant be greater than the length of a list";
+	}
+
+	while (fast->next != nullptr) {
+		slow = slow->next;
+		fast = fast->next;
+	}
+
+	fast->next = first;
+	first = slow->next;
+	slow->next = nullptr;
+} 
+
+//i know thats not necessary i just did it for myself
 //template <class T>
-//inline void List<T>::clear() {
+//void List<T>::shift_single() {
 //	Node* current = first;
 //	while (current) {
-//		Node* next = current->next;
-//		delete current;
-//		current = next;
+//		Node* cnext = current->next;
+//		if (cnext->next == nullptr) {
+//			current->next = nullptr;
+//			cnext->next = first;
+//			first = cnext;
+//		}
+//		current = current->next;
 //	}
-//}
-
-//template <class T>
-//typename List<T>::iterator List<T>::begin() {
-//	return iterator(first);
-//}
-//
-//template <class T>
-//typename List<T>::iterator List<T>::end() {
-//	return iterator(nullptr);
 //}
 
 #endif

@@ -89,12 +89,25 @@ TEST(list, can_erase_front) {
 	ASSERT_NO_THROW(l.erase_front());
 }
 
+TEST(list, cant_erase_front_in_empty_list) {
+	List<int> l;
+	ASSERT_ANY_THROW(l.erase_front());
+}
+
 TEST(list, can_find_element) {
 	List<int> l;
 	l.insert_front(5);
 	l.insert_front(6);
 	l.insert_front(7);
 	EXPECT_EQ(l.find(7), l.get_first());
+}
+
+TEST(list, return_nullptr_when_no_element_is_found) {
+	List<int> l;
+	l.insert_front(5);
+	l.insert_front(6);
+	l.insert_front(7);
+	EXPECT_EQ(l.find(3), nullptr);
 }
 
 TEST(list, iterator_begin) {
@@ -111,7 +124,42 @@ TEST(list, iterator_can_iterate) {
 	EXPECT_EQ(5, *it);
 }
 
-TEST(list, iterator_end) {
-	List<int> l(5);
-	EXPECT_EQ(0, *(l.end()))
+TEST(list, can_erase_all_elements) {
+	List<int> l(5, 2);
+	l.print();
+	for (int i = 0; i < 5; i++) {
+		l.erase_front();
+	}
+	EXPECT_EQ(nullptr, l.get_first());
+}
+
+TEST(list, shift_correctly) {
+	List<int> l1;
+	l1.insert_front(5);
+	l1.insert_front(4);
+	l1.insert_front(3);
+	l1.insert_front(2);
+	l1.insert_front(1);
+
+	List<int> l2;
+	l2.insert_front(2);
+	l2.insert_front(1);
+	l2.insert_front(5);
+	l2.insert_front(4);
+	l2.insert_front(3);
+	l1.shift(3);
+	
+	for (int i = 0; i < 5; i++) {
+		EXPECT_EQ(l1[i], l2[i]);
+	}
+}
+
+TEST(list, throw_when_shift_with_negative_k) {
+	List<int> l(5, 2);
+	ASSERT_ANY_THROW(l.shift(-5));
+}
+
+TEST(list, throw_when_shift_with_k_greater_than_size) {
+	List<int> l(5, 2);
+	ASSERT_ANY_THROW(l.shift(6));
 }
