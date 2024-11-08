@@ -19,7 +19,7 @@ class List {
 
 		Node(T value, Node* next) {
 			data = value;
-			next = next;
+			this->next = next;
 		}
 	};
 
@@ -29,57 +29,106 @@ public:
 
 	class iterator {
 	protected:
-		Node* curr;
+		Node* current;
 	public:
-		explicit iterator(Node* node) : curr(node) {}
+		explicit iterator(Node* Node) : current(Node) {}
 		iterator& operator++() {
-			curr = curr->next;
+			current = current->next;
 			return *this;
 		}
 
 		iterator operator++(int) {
 			iterator copy = *this;
-			curr = curr->next;
+			current = current->next;
 			return copy;
 		}
 
 		T& operator*() {
-			return curr->data;
+			return current->data;
 		}
 
 		T* operator->() {
-			return &(curr->data);
+			return &(current->data);
 		}	
 
 		friend bool operator!=(const iterator& it1, const iterator& it2) {
-			return it1.curr != it2.curr;
+			return it1.current != it2.current;
 		}
 
 		friend bool operator==(const iterator& it1, const iterator& it2) {
-			return it1.curr == it2.curr;
+			return it1.current == it2.current;
 		}
 	};
 
 	List();
 	List(int n, T deflt = T());
+	List(const List& other);
 	~List();
-	List(const List&);
 	List& operator=(const List& other);
 	void print();
 	T& operator[](int index);
-	Node* find(T value);
-	Node* get_first();
 	size_t size();
-	Node* insert(T value, Node* prev);
-	Node* insert_front(T value);
-	Node* erase(Node* prev);
-	Node* erase_front();
-
+	
 	//void clear();
 
-	iterator begin();
-	iterator end();
+	Node* insert(T value, Node* prev) {
+		Node* temp = new Node;
+		temp->next = prev->next;
+		temp->data = value;
+		prev->next = temp;
+		return temp;
+	}
 
+	Node* insert_front(T value) {
+		Node* temp = new Node;
+		temp->next = first;
+		first = temp;
+		temp->data = value;
+		return first;
+	}
+
+	Node* erase(Node* prev) {
+		Node* tmp = prev->next;
+		if (!prev->next || !prev) {
+			throw 1;
+		}
+		prev->next = tmp->next;
+		delete tmp;
+		return prev->next;
+	}
+
+	Node* erase_front() {
+		if (!first) {
+			throw "cant erase element that doesnt exist";
+		}
+		Node* tmp = first;
+		first = tmp->next;
+		delete tmp;
+		return first;
+	}
+
+	Node* find(T value) {
+		Node* current = first;
+		while (current) {
+			if (current->data == value) {
+				return current;
+			}
+			current = current->next;
+		}
+		return nullptr;
+	}
+	
+	Node* get_first() {
+		return first;
+	}
+
+	iterator begin() {
+		return iterator(first);
+	}
+
+	iterator end() {
+		return iterator(nullptr);
+	}
 };
 
 template <class T>
@@ -105,16 +154,6 @@ inline List<T>::List(int n, T deflt = T()) {
 		current->next = tmp;
 		current = current->next;
 	}
-	//current->next = nullptr;
-}
-
-template <class T>
-inline List<T>::~List() {
-	while (first) {
-		Node* second = first->next;
-		delete first;
-		first = second;
-	}
 }
 
 template <class T>
@@ -128,11 +167,19 @@ inline List<T>::List(const List& other) {
 	Node* current = first;
 	Node* ocurrent = other.first;
 	while (ocurrent->next) {
-		ocurrent = ocurrent->next;
-		current->next = new Node(ocurrent->data, nullptr);
+		current->next = new Node(ocurrent->next->data, nullptr);
 		current = current->next;
+		ocurrent = ocurrent->next;
 	}
-	current->next = nullptr;
+}
+
+template <class T>
+inline List<T>::~List() {
+	while (first != nullptr) {
+		Node* second = first->next;
+		delete first;
+		first = second;
+	}
 }
 
 template <class T>
@@ -190,22 +237,22 @@ inline T& List<T>::operator[](int index) {
 	throw "no element found";
 }
 
-template <class T>
-typename List<T>::Node* List<T>::find(T value) {
-	Node* current = first;
-	while (current) {
-		if (current->data == value) {
-			return current;
-		}
-		current = current->next;
-	}
-	return nullptr;
-}
-
-template <class T>
-typename List<T>::Node* List<T>::get_first() {
-	return first;
-}
+//template <class T>
+//typename List<T>::Node* List<T>::find(T value) {
+//	Node* current = first;
+//	while (current) {
+//		if (current->data == value) {
+//			return current;
+//		}
+//		current = current->next;
+//	}
+//	return nullptr;
+//}
+//
+//template <class T>
+//typename List<T>::Node* List<T>::get_first() {
+//	return first;
+//}
 
 template <class T>
 size_t List<T>::size() {
@@ -218,46 +265,46 @@ size_t List<T>::size() {
 	return size;
 }
 
-template <class T>
-typename List<T>::Node* List<T>::insert(T value, List<T>::Node* prev) {
-	Node* temp = new Node;
-	temp->next = prev->next;
-	temp->data = value;
-	prev->next = temp;
-	return temp;
-}
-
-template <class T>
-typename List<T>::Node* List<T>::insert_front(T value) {
-	Node* temp = new Node;
-	temp->next = first;
-	first = temp;
-	temp->data = value;
-	return first;
-}
-
-template <class T>
-typename List<T>::Node* List<T>::erase(List<T>::Node* prev) {
-	Node* tmp = prev->next;
-	if (!prev->next || !prev) {
-		throw 1;
-	}
-	prev->next = tmp->next;
-	delete tmp;
-	return prev->next;
-
-}
-
-template <class T>
-typename List<T>::Node* List<T>::erase_front() {
-	if (!first) {
-		throw "cant erase element that doesnt exist";
-	}
-	Node* tmp = first;
-	first = tmp->next;
-	delete tmp;
-	return first;
-}
+//template <class T>
+//typename List<T>::Node* List<T>::insert(T value, List<T>::Node* prev) {
+//	Node* temp = new Node;
+//	temp->next = prev->next;
+//	temp->data = value;
+//	prev->next = temp;
+//	return temp;
+//}
+//
+//template <class T>
+//typename List<T>::Node* List<T>::insert_front(T value) {
+//	Node* temp = new Node;
+//	temp->next = first;
+//	first = temp;
+//	temp->data = value;
+//	return first;
+//}
+//
+//template <class T>
+//typename List<T>::Node* List<T>::erase(List<T>::Node* prev) {
+//	Node* tmp = prev->next;
+//	if (!prev->next || !prev) {
+//		throw 1;
+//	}
+//	prev->next = tmp->next;
+//	delete tmp;
+//	return prev->next;
+//
+//}
+//
+//template <class T>
+//typename List<T>::Node* List<T>::erase_front() {
+//	if (!first) {
+//		throw "cant erase element that doesnt exist";
+//	}
+//	Node* tmp = first;
+//	first = tmp->next;
+//	delete tmp;
+//	return first;
+//}
 
 //template <class T>
 //inline void List<T>::clear() {
@@ -269,14 +316,14 @@ typename List<T>::Node* List<T>::erase_front() {
 //	}
 //}
 
-template <class T>
-typename List<T>::iterator List<T>::begin() {
-	return iterator(first);
-}
-
-template <class T>
-typename List<T>::iterator List<T>::end() {
-	return iterator(nullptr);
-}
+//template <class T>
+//typename List<T>::iterator List<T>::begin() {
+//	return iterator(first);
+//}
+//
+//template <class T>
+//typename List<T>::iterator List<T>::end() {
+//	return iterator(nullptr);
+//}
 
 #endif
