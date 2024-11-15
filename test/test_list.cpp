@@ -69,14 +69,36 @@ TEST(list, can_insert_front) {
 	ASSERT_NO_THROW(l.insert_front(2));
 }
 
+TEST(list, correctly_insert_front) {
+	List<int> l(1);
+	l.insert_front(2);
+	EXPECT_EQ(l[0], 2);
+}
+
 TEST(list, can_insert) {
 	List<int> l(5);
 	ASSERT_NO_THROW(l.insert(1, l.get_first()));
 }
 
+TEST(list, correctly_insert) {
+	List<int> l(5);
+	l.insert(2, l.get_first());
+	EXPECT_EQ(l[1], 2);
+}
+
 TEST(list, can_insert_front_in_empty_list) {
 	List<int> l;
 	ASSERT_NO_THROW(l.insert_front(228));
+}
+
+TEST(list, correctly_erase) {
+	List<int> l1(5, 1);
+	l1[1] = 2;
+	l1.erase(l1.get_first());
+	List<int> l2(4, 1);
+	for (int i = 0; i < 4; i++) {
+		EXPECT_EQ(l1[i], l2[i]);
+	}
 }
 
 TEST(list, can_erase) {
@@ -87,6 +109,16 @@ TEST(list, can_erase) {
 TEST(list, can_erase_front) {
 	List<int> l(5, 3);
 	ASSERT_NO_THROW(l.erase_front());
+}
+
+TEST(list, correctly_erase_front) {
+	List<int> l1(5, 1);
+	l1[0] = 2;
+	l1.erase_front();
+	List<int> l2(4, 1);
+	for (int i = 0; i < 4; i++) {
+		EXPECT_EQ(l1[i], l2[i]);
+	}
 }
 
 TEST(list, cant_erase_front_in_empty_list) {
